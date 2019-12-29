@@ -16,6 +16,5 @@
     ],
     "website": "https://polynote.org/",
     "preInstallNotes": "This DC/OS Service is currently in preview.",
-    "postInstallNotes": "DC/OS Polynote is being installed!\n\n\tDocumentation: https://github.com/dcos/examples/tree/master/zeppelin/1.11\n\tIssues: https://dcos.io/community or\n\t\t https://github.com/MaibornWolff/dcos-zeppelin",
-    "postUninstallNotes": "If you installed Polynote with an external persistent volume make sure to delete the volume manually."
+    "postInstallNotes": "DC/OS Polynote is being installed!\n\n\tIssues: https://github.com/minyk/dcos-polynote"
 }
