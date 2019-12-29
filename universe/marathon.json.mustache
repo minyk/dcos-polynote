@@ -1,0 +1,138 @@
+{
+  "id": "/{{service.name}}",
+  "instances": 1,
+  "cpus": {{service.cores}},
+  "mem": {{service.memory}},
+  "env": {
+    {{#polynote.python_packages}}
+    "PYTHON_PACKAGES": "{{polynote.python_packages}}",
+    {{/polynote.python_packages}}
+    {{#spark.cores_max}}
+    "SPARK_CORES_MAX": "{{spark.cores_max}}",
+    {{/spark.cores_max}}
+    {{#spark.executor_memory}}
+    "SPARK_EXECUTOR_MEMORY": "{{spark.executor_memory}}",
+    {{/spark.executor_memory}}
+    {{#spark.executor_cores}}
+    "SPARK_EXECUTOR_CORES": "{{spark.executor_cores}}",
+    {{/spark.executor_cores}}
+    "SPARK_MESOS_EXECUTOR_DOCKER_IMAGE": "{{spark.executor_image}}",
+    {{#polynote.timezone}}
+    "TZ": "{{polynote.timezone}}",
+    {{/polynote.timezone}}
+
+    {{#polynote.maven_repo.enabled}}
+    "POLYNOTE_MAVEN_URL": "{{polynote.maven_repo.repo_url}}",
+    {{/polynote.maven_repo.enabled}}
+    {{#polynote.maven_central}}
+    "POLYNOTE_DEP_MVNREPO": "{{polynote.maven_central}}",
+    {{/polynote.maven_central}}
+    {{^polynote.maven_central}}
+    "POLYNOTE_DEP_MVNREPO": "http://repo1.maven.org/maven2/",
+    {{/polynote.maven_central}}
+    "POLYNOTE_JAVA_OPTS": "{{spark.java_opts}}",
+    "LOG_LEVEL": "{{polynote.loglevel}}"
+  },
+  "container": {
+    "type": "MESOS",
+    "docker": {
+      "image": "{{resource.assets.container.docker.polynote}}",
+      "forcePullImage": true
+    },
+    {{#service.virtual_network_enabled}}
+    "portMappings": [
+      {
+        "containerPort": 8192,
+        "name": "web",
+        "protocol": "tcp"
+      }
+    ],
+    {{/service.virtual_network_enabled}}
+    "volumes": [
+      {{#service.external_persistent_volume}}
+      {
+        "containerPath": "/polynote-data",
+        "external": {
+          "name": "{{service.external_persistent_volume}}",
+          "provider": "dvdi",
+          "options": {
+            "dvdi/driver": "rexray"
+          }
+        },
+        "mode": "RW"
+      }
+      {{/service.external_persistent_volume}}
+      {{#service.local_persistent_volume}}
+      {
+        "containerPath": "/polynote-data",
+        "hostPath": "polynotedata",
+        "mode": "RW"
+      },
+      {
+        "containerPath": "polynotedata",
+        "mode": "RW",
+        "persistent": {
+          "type": "root",
+          "size": 10240,
+          "constraints": []
+        }
+      }
+      {{/service.local_persistent_volume}}
+    ]
+  },
+  "networks": [
+    {{#service.virtual_network_enabled}}
+    {
+      "name": "{{service.virtual_network_name}}",
+      "mode": "container"
+    }
+    {{/service.virtual_network_enabled}}
+    {{^service.virtual_network_enabled}}
+    {
+      "mode": "host"
+    }
+    {{/service.virtual_network_enabled}}
+  ],
+  "upgradeStrategy": {
+    "maximumOverCapacity": 0,
+    "minimumHealthCapacity": 0
+  },
+  "labels": {
+    {{#service.marathon_lb}}
+    "HAPROXY_GROUP": "{{service.marathon_lb_group}}",
+    "HAPROXY_0_VHOST": "{{service.marathon_lb_vhost}}",
+    {{/service.marathon_lb}}
+    "DCOS_SERVICE_SCHEME": "http",
+    "DCOS_SERVICE_NAME": "{{service.name}}",
+    "DCOS_SERVICE_PORT_INDEX": "0"
+  },
+  "healthChecks": [
+    {
+      "protocol": "TCP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 30,
+      "timeoutSeconds": 15,
+      "maxConsecutiveFailures": 5
+    }
+  ],
+  "fetch": [
+    {{#polynote.additional_jar}}
+    { "uri": "{{polynote.additional_jar}}", "extract": false, "executable": false, "cache": false}
+    {{/polynote.additional_jar}}
+    {{#polynote.cacerts_url}}
+    {{#polynote.additional_jar}},{{/polynote.additional_jar}}
+    { "uri": "{{polynote.cacerts_url}}", "extract": false, "executable": false, "cache": false }
+    {{/polynote.cacerts_url}}
+    {{#spark.use_hdfs}}
+    {{#polynote.cacerts_url}},{{/polynote.cacerts_url}}
+    { "uri": "{{spark.hdfs_config_url}}/hdfs-site.xml", "extract": false, "executable": false, "cache": false },
+    { "uri": "{{spark.hdfs_config_url}}/core-site.xml", "extract": false, "executable": false, "cache": false }
+    {{/spark.use_hdfs}}
+    {{#spark.use_hive}}
+    {{#polynote.cacerts_url}},{{/polynote.cacerts_url}}{{^polynote.cacerts_url}}{{#spark.use_hdfs}},{{/spark.use_hdfs}}{{/polynote.cacerts_url}}
+    { "uri": "{{spark.hive_config_url}}/hive-site.xml", "extract": false, "executable": false, "cache": false }
+    {{/spark.use_hive}}
+  ],
+  "secrets": {}
+}

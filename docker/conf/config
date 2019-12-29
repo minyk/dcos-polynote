@@ -1,0 +1,51 @@
+# The host and port can be set by uncommenting and editing the following lines:
+listen:
+  host: 0.0.0.0
+  port: 8192
+
+#storage:
+#  # The location Polynote looks for your notebooks in
+#  dir: notebooks
+#  # The location Polynote puts various caches, such as virtual environments created for your notebooks.
+#  cache: tmp
+
+# Default repositories can be specified. Uncommenting the following lines would add four default repositories which are inherited by new notebooks.
+#repositories:
+#  - ivy:
+#      base: https://my-artifacts.org/artifacts/
+#  - ivy:
+#      base: https://my-custom-ivy-repo.org/artifacts/
+#      artifact_pattern: [orgPath]/[module](_[scalaVersion])(_[sbtVersion])/[revision]/[artifact]-[revision](-[classifier]).[ext]
+#      metadata_pattern: [orgPath]/[module](_[scalaVersion])(_[sbtVersion])/[revision]/[module](_[scalaVersion])(_[sbtVersion])-[revision]-ivy.xml
+#      changing: true
+#  - maven:
+#      base: http://central.maven.org/maven2/
+#  - maven:
+#      base: http://oss.sonatype.org/content/repositories/snapshots
+#      changing: true
+
+# Default dependencies can be specified. Uncommenting the following lines would add some default dependencies which are inherited by new notebooks.
+#dependencies:
+#  scala:
+#    - org.typelevel:cats-core_2.11:1.6.0
+#    - com.mycompany:my-library:jar:all:1.0.0
+#  python:
+#    - requests
+#    - urllib3==1.25.3
+
+#exclusions:
+#  - com.google.guava:guava  # spark, update your guava already!!!
+
+# Spark config params can be set by uncommenting and editing the following lines:
+spark:
+  spark.master: mesos://zk://master.mesos:2181/mesos
+  spark.executor.memory: 1G
+  spark.cores.max: 4
+  spark.mesos.executor.docker.image: {{SPARK_MESOS_EXECUTOR_DOCKER_IMAGE}}
+  spark.mesos.executor.docker.forcePullImage: true
+  spark.mesos.containerizer: mesos
+  spark.mesos.executor.home: /opt/spark
+  spark.driver.extraClassPath: :/etc/hadoop/conf/
+#  spark.mesos.driver.webui.url: {{service.marathon_lb_vhost}}
+#  spark.driver.userClasspathFirst: true
+#  spark.executor.userClasspathFirst: true

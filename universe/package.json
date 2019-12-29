@@ -1,0 +1,21 @@
+{
+    "packagingVersion": "4.0",
+    "name": "polynote",
+    "version": "0.1-0.2.15-2.4.3",
+    "minDcosReleaseVersion": "1.10",
+    "scm": "https://github.com/minyk/dcos-polynote",
+    "description": "Polynote is a web-based notebook that enables interactive data analytics using spark",
+    "framework": true,
+    "tags": [
+        "framework",
+        "bigdata",
+        "spark",
+        "notebook",
+        "interactive",
+        "python"
+    ],
+    "website": "https://polynote.org/",
+    "preInstallNotes": "This DC/OS Service is currently in preview.",
+    "postInstallNotes": "DC/OS Polynote is being installed!\n\n\tDocumentation: https://github.com/dcos/examples/tree/master/zeppelin/1.11\n\tIssues: https://dcos.io/community or\n\t\t https://github.com/MaibornWolff/dcos-zeppelin",
+    "postUninstallNotes": "If you installed Polynote with an external persistent volume make sure to delete the volume manually."
+}
